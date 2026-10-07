@@ -32,8 +32,11 @@ Invoke-WebRequest -Uri "https://github.com/devsync/dev-sync/releases/latest/down
 
 **Linux (Ubuntu, Debian, RHEL, Rocky, CentOS - x64 & ARM64)**:
 ```bash
-# Auto-detects architecture (x64 / ARM64) and installs dev-sync to /usr/local/bin:
+# Option A: One-line install (auto-detects x64 / ARM64):
 curl -fsSL https://raw.githubusercontent.com/devsync/dev-sync/main/scripts/install.sh | bash
+
+# Option B: Self-extracting .run package from GitHub Releases:
+chmod +x dev-sync-linux-arm64.run && sudo ./dev-sync-linux-arm64.run
 ```
 
 **macOS**:
