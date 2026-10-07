@@ -30,10 +30,16 @@ Invoke-WebRequest -Uri "https://github.com/devsync/dev-sync/releases/latest/down
 [Environment]::SetEnvironmentVariable("Path", $env:Path + ";$HOME", "User")
 ```
 
-**Linux / macOS**:
+**Linux (Ubuntu, Debian, RHEL, Rocky, CentOS - x64 & ARM64)**:
 ```bash
-curl -sSL https://github.com/devsync/dev-sync/releases/latest/download/dev-sync-linux-amd64.tar.gz | tar -xz
-sudo install -m 755 dev-sync-linux-amd64 /usr/local/bin/dev-sync
+# Auto-detects architecture (x64 / ARM64) and installs dev-sync to /usr/local/bin:
+curl -fsSL https://raw.githubusercontent.com/devsync/dev-sync/main/scripts/install.sh | bash
+```
+
+**macOS**:
+```bash
+curl -sSL https://github.com/devsync/dev-sync/releases/latest/download/dev-sync-darwin-arm64 -o dev-sync
+sudo install -m 755 dev-sync /usr/local/bin/dev-sync
 ```
 
 ---
