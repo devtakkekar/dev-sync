@@ -1,4 +1,4 @@
-# Dev-Sync
+# dev-sync
 
 > **One Source. Multiple Replicas. Zero Hassle.**  
 > Continuously synchronize a single source directory with multiple target directories in real time.
