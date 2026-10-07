@@ -14,11 +14,11 @@ fi
 TMP_HEADER="$(mktemp)"
 
 cat << 'EOF' > "$TMP_HEADER"
-#!/usr/bin/env bash
+#!/bin/bash
 # ==============================================================================
 # Dev-Sync Self-Extracting Linux Installer (.run)
 # ==============================================================================
-set -euo pipefail
+set -eu
 
 VERSION="1.0.0"
 APP_NAME="dev-sync"
