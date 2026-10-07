@@ -13,7 +13,7 @@
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](#1-install)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20(macOS%20compatible)-lightgrey.svg)](#1-install)
 [![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Single%20Binary)-brightgreen.svg)](#1-install)
 
 ---
