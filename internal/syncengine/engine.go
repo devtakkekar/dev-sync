@@ -14,7 +14,6 @@ import (
 	"github.com/devsync/dev-sync/internal/ignore"
 	"github.com/devsync/dev-sync/internal/logging"
 	"github.com/devsync/dev-sync/internal/planner"
-	"github.com/devsync/dev-sync/internal/safety"
 	"github.com/devsync/dev-sync/internal/scanner"
 	"github.com/devsync/dev-sync/internal/state"
 )

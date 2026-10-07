@@ -64,6 +64,15 @@ const (
 
 // Init initializes the global logger for the given project root.
 func Init(projectRoot string, level Level, quiet bool) (*Logger, error) {
+	if globalLogger != nil {
+		globalLogger.mu.Lock()
+		if globalLogger.activeFile != nil {
+			_ = globalLogger.activeFile.Close()
+			globalLogger.activeFile = nil
+		}
+		globalLogger.mu.Unlock()
+	}
+
 	logDir := filepath.Join(projectRoot, config.ConfigDirName, config.LogDirName)
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create log directory: %w", err)
@@ -171,6 +180,18 @@ func (l *Logger) printConsole(lvl Level, msg string) {
 		fmt.Printf("%s[WARN]%s  %s\n", colorYellow, colorReset, msg)
 	case LevelError:
 		fmt.Printf("%s[ERROR]%s %s\n", colorRed, colorReset, msg)
+	}
+}
+
+// Close closes the active log file handle.
+func Close() {
+	if globalLogger != nil {
+		globalLogger.mu.Lock()
+		defer globalLogger.mu.Unlock()
+		if globalLogger.activeFile != nil {
+			_ = globalLogger.activeFile.Close()
+			globalLogger.activeFile = nil
+		}
 	}
 }
 

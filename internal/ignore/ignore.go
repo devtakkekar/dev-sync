@@ -105,7 +105,10 @@ func (m *IgnoreMatcher) ShouldIgnore(relPath string, isDir bool) bool {
 
 	for _, rule := range m.rules {
 		if rule.DirOnly && !isDir {
-			continue
+			// A directory-only rule (e.g. "node_modules/") still ignores files located inside that directory
+			if !strings.HasPrefix(normalized, rule.Pattern+"/") && !hasMatchingParentDir(rule.Pattern, normalized) {
+				continue
+			}
 		}
 
 		matched := matchPattern(rule.Pattern, normalized, isDir)
@@ -119,6 +122,21 @@ func (m *IgnoreMatcher) ShouldIgnore(relPath string, isDir bool) bool {
 	}
 
 	return ignored
+}
+
+func hasMatchingParentDir(pattern, path string) bool {
+	parts := strings.Split(path, "/")
+	// Check each parent prefix
+	for i := 1; i < len(parts); i++ {
+		parent := strings.Join(parts[:i], "/")
+		if parent == pattern {
+			return true
+		}
+		if matched, _ := filepath.Match(pattern, parts[i-1]); matched {
+			return true
+		}
+	}
+	return false
 }
 
 func matchPattern(pattern, path string, isDir bool) bool {

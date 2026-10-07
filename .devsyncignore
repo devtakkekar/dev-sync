@@ -1,0 +1,38 @@
+# Dev-Sync Ignore Rules
+# Syntax identical to standard .gitignore
+
+# Internal Dev-Sync metadata and runtime state (always protected)
+.devsync/
+.devsync/**
+*.devsync-tmp.*
+
+# Version Control
+.git/
+.github/
+.gitignore
+
+# IDE and Editor Cache
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating System Metadata
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Common Build Artifacts & Dependencies
+node_modules/
+vendor/
+dist/
+build/
+bin/
+*.exe
+*.o
+*.obj
+*.log
+*.tmp
+*.bak

@@ -18,6 +18,16 @@ import (
 // WatchCallback is invoked after events are debounced and coalesced.
 type WatchCallback func(changedPaths []string)
 
+// CheckWatcherSupport verifies that the operating system supports filesystem event monitoring.
+func CheckWatcherSupport() (bool, error) {
+	w, err := fsnotify.NewWatcher()
+	if err != nil {
+		return false, err
+	}
+	_ = w.Close()
+	return true, nil
+}
+
 // Watcher manages recursive filesystem watching with debouncing and editor-save coalescing.
 type Watcher struct {
 	sourceRoot string
@@ -25,6 +35,7 @@ type Watcher struct {
 	debounceMs time.Duration
 	fsWatcher  *fsnotify.Watcher
 	mu         sync.Mutex
+	started    bool
 	pending    map[string]time.Time
 	stopCh     chan struct{}
 	doneCh     chan struct{}
@@ -94,6 +105,10 @@ func (w *Watcher) watchRecursive(root string) error {
 
 // Start begins the event processing loop.
 func (w *Watcher) Start(ctx context.Context, callback WatchCallback) {
+	w.mu.Lock()
+	w.started = true
+	w.mu.Unlock()
+
 	go func() {
 		defer close(w.doneCh)
 		ticker := time.NewTicker(50 * time.Millisecond)
@@ -181,5 +196,12 @@ func (w *Watcher) Stop() {
 		close(w.stopCh)
 	}
 	_ = w.fsWatcher.Close()
-	<-w.doneCh
+
+	w.mu.Lock()
+	started := w.started
+	w.mu.Unlock()
+
+	if started {
+		<-w.doneCh
+	}
 }

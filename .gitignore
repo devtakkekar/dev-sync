@@ -1,0 +1,14 @@
+# Binaries and build artifacts
+dist/
+bin/
+*.exe
+*.test
+
+# Dev-Sync local test dirs
+.devsync/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

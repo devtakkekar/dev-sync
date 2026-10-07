@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -17,10 +16,9 @@ import (
 
 	"github.com/devsync/dev-sync/internal/config"
 	"github.com/devsync/dev-sync/internal/drift"
-	"github.com/devsync/dev-sync/internal/ignore"
 	"github.com/devsync/dev-sync/internal/logging"
+	"github.com/devsync/dev-sync/internal/planner"
 	"github.com/devsync/dev-sync/internal/safety"
-	"github.com/devsync/dev-sync/internal/scanner"
 	"github.com/devsync/dev-sync/internal/syncengine"
 	"github.com/devsync/dev-sync/internal/verify"
 	"github.com/devsync/dev-sync/internal/watcher"
@@ -690,7 +688,6 @@ func runStatus(args []string) int {
 	logging.PrintSuccess("Source: Available (%s)", engine.Config.Source)
 	fmt.Println()
 
-	hasOutSync := false
 	hasUnavailable := false
 
 	for _, rep := range engine.Config.Replicas {
@@ -714,7 +711,6 @@ func runStatus(args []string) int {
 		}
 
 		if report.HasDrift {
-			hasOutSync = true
 			logging.PrintWarning("%s\n  Status: OUT OF SYNC\n", rep.ID)
 			if len(report.Modified) > 0 {
 				fmt.Println("  Modified:")
@@ -743,9 +739,6 @@ func runStatus(args []string) int {
 
 	if hasUnavailable {
 		return ExitReplicaUnavailable
-	}
-	if hasOutSync {
-		return ExitValidationError
 	}
 	return ExitSuccess
 }
@@ -905,12 +898,12 @@ func runDoctor(args []string) int {
 		}
 
 		// 5. Watcher test
-		w, err := watcher.NewWatcher(cfg.Source, nil, 100)
+		testW, err := watcher.CheckWatcherSupport()
 		if err != nil {
 			logging.PrintError("Filesystem watcher initialization: %v", err)
 			hasErrors = true
 		} else {
-			w.Stop()
+			_ = testW
 			logging.PrintSuccess("Filesystem watcher functional")
 		}
 
