@@ -1,14 +1,54 @@
-# Binaries and build artifacts
+# ==========================================
+# Dev-Sync - Git Ignore Rules
+# ==========================================
+
+# Binaries and build output
 dist/
 bin/
 *.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test binaries, coverage, and profiling
 *.test
+*.out
+*.prof
+coverage.txt
 
-# Dev-Sync local test dirs
+# Go workspace
+go.work
+go.work.sum
+
+# Dev-Sync runtime data & state
 .devsync/
+*.devsync-tmp.*
 
-# OS and editor files
+# Operating System files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
+
+# Editor & IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# Environment & credentials
+.env
+.env.local
+*.pem
+*.key
+
+# Log files
+*.log

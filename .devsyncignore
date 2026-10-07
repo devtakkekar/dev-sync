@@ -1,5 +1,7 @@
-# Dev-Sync Ignore Rules
-# Syntax identical to standard .gitignore
+# ==========================================
+# Dev-Sync - Synchronization Ignore Rules
+# ==========================================
+# Files and directories excluded from being mirrored to replicas
 
 # Internal Dev-Sync metadata and runtime state (always protected)
 .devsync/
@@ -11,28 +13,46 @@
 .github/
 .gitignore
 
+# Operating System Metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
 # IDE and Editor Cache
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+*.sublime-workspace
 
-# Operating System Metadata
-.DS_Store
-Thumbs.db
-ehthumbs.db
-desktop.ini
-
-# Common Build Artifacts & Dependencies
+# Dependency directories
 node_modules/
 vendor/
+
+# Language & Runtime Caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.tox/
+
+# Common Build Artifacts
 dist/
 build/
 bin/
-*.exe
+target/
 *.o
 *.obj
+
+# Temporary and Log files
 *.log
 *.tmp
 *.bak
+*.swp
