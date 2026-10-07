@@ -1,7 +1,7 @@
 # Dev-Sync
 
 > **One Source. Multiple Replicas. Zero Hassle.**  
-> A lightweight, cross-platform developer tool that continuously synchronizes a single source folder to multiple target folders in real time.
+> Continuously synchronize a single source directory with multiple target directories in real time.
 
 ```text
                          SOURCE (Authoritative)
@@ -13,41 +13,24 @@
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](#installation)
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Single%20Binary)-brightgreen.svg)](#overview)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](#1-install)
+[![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Single%20Binary)-brightgreen.svg)](#1-install)
 
 ---
 
-## Why Dev-Sync?
+## ⚡ Quick Start (60-Second Plug & Play)
 
-If you've ever had to copy code between multiple folders—such as:
-- Multiple local development or sandbox environments
-- Game server directories (FiveM, Minecraft, game engines) where code must live physically inside runtime folders
-- Testing simultaneous builds or local staging instances
-- Microservice clusters or multi-tenant folders
+### 1. Install
 
-...Dev-Sync runs quietly in the background and keeps your targets synchronized the second you save a file.
-
-- **Unidirectional Safety (`Source ➔ Replicas`)**: Your source folder is strictly authoritative. Changes inside a replica are never copied back to your source code.
-- **Atomic & Safe**: Files are never partially written or corrupted. Dev-Sync writes to temporary staging files, syncs to disk, and replaces files atomically.
-- **Language & Framework Agnostic**: Works with everything—Node.js, Python, Go, Rust, PHP, C++, static assets, or game files.
-- **Zero Configuration Bloat**: No accounts, no daemons, no databases, no runtimes. Download the single executable and run.
-
----
-
-## Quick Start (Plug & Play)
-
-### Step 1: Install
-
-#### Windows
-Download **`dev-sync.exe`** from [Releases](https://github.com/devsync/dev-sync/releases/latest) and place it in your project or add it to your PATH:
-
+**Windows (PowerShell)**:
 ```powershell
-# Optional: Add to PATH in PowerShell
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\path\to\dev-sync", "User")
+# Download standalone dev-sync.exe
+Invoke-WebRequest -Uri "https://github.com/devsync/dev-sync/releases/latest/download/dev-sync.exe" -OutFile "$HOME\dev-sync.exe"
+# (Optional) Add to PATH so you can use it anywhere:
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$HOME", "User")
 ```
 
-#### Linux & macOS
+**Linux / macOS**:
 ```bash
 curl -sSL https://github.com/devsync/dev-sync/releases/latest/download/dev-sync-linux-amd64.tar.gz | tar -xz
 sudo install -m 755 dev-sync-linux-amd64 /usr/local/bin/dev-sync
@@ -55,65 +38,84 @@ sudo install -m 755 dev-sync-linux-amd64 /usr/local/bin/dev-sync
 
 ---
 
-### Step 2: Initialize Your Project (30 Seconds)
+### 2. Configure Your Project
 
-Navigate into your source project directory and run:
+Navigate to your source code directory and initialize:
 
 ```bash
+cd /path/to/my-project
 dev-sync init
 ```
 
-An interactive setup will ask you:
-1. **Source directory**: (Press Enter for current directory `.`)
-2. **Add replica**: Enter `y` and provide the destination folder path (e.g. `C:\Servers\test-env` or `/opt/staging`).
-3. Press Enter to confirm!
-
-> 💡 **Sensible Defaults:** Dev-Sync automatically generates a `.devsyncignore` file. Common files like `.git/`, `node_modules/`, editor temp files, and logs are automatically excluded out of the box.
+Follow the 10-second prompt:
+- **Source**: Press <kbd>Enter</kbd> (defaults to current folder `.`)
+- **Add replica**: Type `y`, then paste your replica destination path (e.g. `C:\Servers\test-env` or `/opt/staging`)
+- Done! Sensible ignore rules (`.git/`, `node_modules/`, logs, and temp files) are configured automatically.
 
 ---
 
-### Step 3: Run & Develop
-
-You're done! Now start watch mode:
+### 3. Run & Forget
 
 ```bash
 dev-sync watch
 ```
 
-Whenever you save or delete a file in your source folder, Dev-Sync immediately mirrors the change to all your replicas.
+**That's it!** Whenever you edit or delete files in your source directory, Dev-Sync immediately mirrors them to all your replicas.
 
-To run a one-time synchronization instead:
-
-```bash
-dev-sync sync
-```
+*(Need a one-time sync instead? Just run `dev-sync sync`)*
 
 ---
 
-## Daily Commands Cheat Sheet
+## 🛠️ Command Cheat Sheet
 
-| Command | What it does |
+| Command | Action |
 |---|---|
-| `dev-sync watch` | Continuously mirrors changes to replicas in real time |
-| `dev-sync sync` | Runs a one-time synchronization pass |
+| `dev-sync watch` | Continuously mirrors source changes to replicas in real time |
+| `dev-sync sync` | Performs a one-time synchronization pass |
 | `dev-sync sync --dry-run` | Previews planned changes without touching any files on disk |
-| `dev-sync status` | Checks if replicas are up-to-date, missing files, or drifted |
-| `dev-sync add` | Adds a new replica destination folder |
-| `dev-sync remove` | Removes a replica from configuration (never deletes your files) |
-| `dev-sync list` | Shows your configured source and replicas |
-| `dev-sync verify` | Deep cryptographic SHA-256 integrity check across all files |
-| `dev-sync doctor` | Checks disk permissions, watcher capabilities, and health |
+| `dev-sync status` | Checks if replicas are in sync, missing files, or drifted |
+| `dev-sync add` | Adds an additional replica folder to an existing project |
+| `dev-sync remove` | Removes a replica from sync config (never touches your files) |
+| `dev-sync list` | Displays all configured source and replica destinations |
+| `dev-sync verify` | Deep cryptographic SHA-256 verification across all files |
+| `dev-sync doctor` | Runs health diagnostics on permissions, paths, and watchers |
+| `dev-sync config` | Prints current configuration settings |
 
 ---
 
-## Common Features
+## 📖 Detailed Overview & Architecture
 
-### 🛡️ Out-of-Sync Detection & Auto-Repair
-If a file inside a replica is modified or an extra file is placed there accidentally:
+### Why Dev-Sync?
+Dev-Sync is built for developer workflows where code must physically exist in multiple places:
+- **Game / Server Development** (FiveM, Minecraft servers, game engines requiring scripts placed directly in runtime directories)
+- **Multi-Environment Testing** (Simultaneously testing local, staging, and container mounts)
+- **Local Deployment Clusters** (Multiple microservice instances without slow build/copy loops)
+
+---
+
+### Core Guarantees
+
+#### 1. Unidirectional Authority (`SOURCE ➔ REPLICAS`)
+The source directory is always authoritative. Changes in replicas are classified as **drift** and are never copied back into your source code.
+
+#### 2. Atomic File Replacement
+Files are never partially written or locked. Dev-Sync streams to temporary files (`.devsync-tmp.*`), flushes storage buffers to disk (`fsync`), verifies integrity, and executes an atomic replace.
+
+#### 3. Path Traversal & Root Safety
+Target paths are validated to stay strictly inside replica boundaries (`SafeResolvePath`). Dangerous directory traversals (`../`), overlapping source/replica loops, and system roots (`/`, `C:\`, `C:\Windows`) are actively blocked.
+
+#### 4. Smart Event Coalescing
+Modern code editors (VS Code, JetBrains, Vim) generate multiple rapid events per save (temp write ➔ rename ➔ modify). Dev-Sync debounces events (default `150ms`) into a single logical update.
+
+---
+
+### 🛡️ Drift Detection & Auto-Repair
+
+If a replica is modified externally or extra files are added:
+
 ```bash
 dev-sync status
 ```
-Outputs:
 ```text
 my-replica
 ⚠ OUT OF SYNC
@@ -121,61 +123,79 @@ my-replica
   Extra:    debug.log
 ```
 
-To automatically restore the replica back to the source:
+To restore the replica from authoritative source:
 ```bash
 # Manual repair:
 dev-sync sync --replica my-replica
 
-# Or let watch mode automatically heal drift on the fly:
+# Or auto-repair on the fly during watch mode:
 dev-sync watch --auto-repair
 ```
 
-### ⚡ Smart Save Coalescing
-Code editors (VS Code, JetBrains, Sublime, Vim) often trigger multiple filesystem events on a single save (temp file write ➔ rename ➔ save). Dev-Sync debounces rapid events (default `150ms`) so only one clean, aggregated sync occurs.
+---
 
-### 🔔 Optional Discord Notifications
-Dev-Sync can optionally post sync summaries and alerts to a Discord webhook:
-1. In `.devsync/config.json`, set `"discord": { "enabled": true }`.
-2. Provide your webhook via config or environment variable:
-   ```bash
-   export DEVSYNC_DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
-   ```
-*(Webhook URLs are always masked in logs to protect your secrets).*
+### 🩺 Health Checks & Verification
+
+- **`dev-sync doctor`**: Pre-flight diagnostic tool checking disk access, write permissions, watcher availability, and configuration integrity.
+- **`dev-sync verify`**: Performs deep byte-by-byte SHA-256 hashing across source and replicas to ensure exact parity.
 
 ---
 
-## Configuration (`.devsync/config.json`)
-
-Stored in your project's root folder under `.devsync/config.json`:
+### ⚙️ Full Configuration Reference (`.devsync/config.json`)
 
 ```json
 {
   "version": 1,
-  "source": "C:\\Projects\\my-app",
+  "source": "/path/to/source",
   "replicas": [
     {
-      "id": "staging-server",
-      "path": "C:\\Servers\\staging\\my-app",
+      "id": "staging-env",
+      "path": "/path/to/replica",
       "enabled": true
     }
   ],
   "sync": {
     "deleteExtraneous": true,
     "verifyAfterSync": true,
-    "atomicWrites": true
+    "atomicWrites": true,
+    "preserveTimestamps": true,
+    "preservePermissions": true
   },
   "drift": {
-    "autoRepair": false
+    "autoRepair": false,
+    "detectOnWatch": true
   },
   "watch": {
-    "debounceMs": 150
+    "debounceMs": 150,
+    "source": true,
+    "replicas": false
+  },
+  "filesystem": {
+    "symlinkMode": "skip",
+    "bufferSizeKB": 64
+  },
+  "discord": {
+    "enabled": false,
+    "webhookUrl": ""
   }
 }
 ```
 
 ---
 
-## Building from Source
+### 🔔 Optional Discord Webhooks
+
+Send sync alerts and drift notifications to a Discord channel:
+1. In `.devsync/config.json`, set `"discord": { "enabled": true }`.
+2. Provide your webhook URL via config or environment variable:
+   ```bash
+   export DEVSYNC_DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+   ```
+*(Webhook URLs are always masked in logs as `https://discord.com/api/webhooks/.../********` to protect credentials).*
+
+---
+
+### 🔨 Building from Source
 
 Requires Go 1.22+:
 
