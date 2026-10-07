@@ -14,11 +14,11 @@ fi
 TMP_HEADER="$(mktemp)"
 
 cat << 'EOF' > "$TMP_HEADER"
-#!/bin/bash
+#!/bin/sh
 # ==============================================================================
 # Dev-Sync Self-Extracting Linux Installer (.run)
 # ==============================================================================
-set -eu
+set -e
 
 VERSION="1.0.0"
 APP_NAME="dev-sync"
@@ -28,7 +28,7 @@ show_help() {
     echo "Usage: $0 [options]"
     echo ""
     echo "Options:"
-    echo "  --prefix <dir>   Custom installation directory"
+    echo "  --prefix <dir>   Custom installation directory (default: /usr/local/bin)"
     echo "  --extract-only   Extract binary into current folder without system install"
     echo "  -h, --help       Display this help message"
     exit 0
@@ -61,11 +61,13 @@ echo "=========================================="
 echo "    Dev-Sync Linux Installer v$VERSION    "
 echo "=========================================="
 
-# Find line number where payload begins
 PAYLOAD_LINE=$(awk '/^__PAYLOAD_BEGINS_HERE__/ {print NR + 1; exit 0; }' "$0")
+TMP_BIN=$(mktemp)
 
-TMP_BIN="$(mktemp)"
-tail -n +"$PAYLOAD_LINE" "$0" | tr -d '\r' | base64 -d -i > "$TMP_BIN"
+if ! tail -n +"$PAYLOAD_LINE" "$0" | tr -d '\r' | base64 -d -i > "$TMP_BIN" 2>/dev/null; then
+    tail -n +"$PAYLOAD_LINE" "$0" | tr -d '\r' | base64 -d > "$TMP_BIN"
+fi
+
 chmod +x "$TMP_BIN"
 
 if [ "$EXTRACT_ONLY" -eq 1 ]; then
@@ -76,7 +78,6 @@ if [ "$EXTRACT_ONLY" -eq 1 ]; then
     exit 0
 fi
 
-# Determine whether sudo is needed
 SUDO=""
 if [ ! -w "$TARGET_DIR" ] && [ "$(id -u)" -ne 0 ]; then
     if command -v sudo >/dev/null 2>&1; then
@@ -91,7 +92,7 @@ $SUDO install -m 755 "$TMP_BIN" "$TARGET_DIR/$APP_NAME"
 rm -f "$TMP_BIN"
 
 echo "✓ Successfully installed $APP_NAME to $TARGET_DIR/$APP_NAME"
-"$TARGET_DIR/$APP_NAME" version
+"$TARGET_DIR/$APP_NAME" version 2>/dev/null || true
 echo "Run '$APP_NAME --help' to get started."
 exit 0
 
