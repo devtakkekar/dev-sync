@@ -150,6 +150,9 @@ func MaskWebhookURL(url string) string {
 	if url == "" {
 		return "(none)"
 	}
+	if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
+		return url
+	}
 	parts := strings.Split(url, "/")
 	if len(parts) >= 2 {
 		parts[len(parts)-1] = "********"
