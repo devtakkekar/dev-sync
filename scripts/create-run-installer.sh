@@ -65,7 +65,7 @@ echo "=========================================="
 PAYLOAD_LINE=$(awk '/^__PAYLOAD_BEGINS_HERE__/ {print NR + 1; exit 0; }' "$0")
 
 TMP_BIN="$(mktemp)"
-tail -n +"$PAYLOAD_LINE" "$0" | base64 -d > "$TMP_BIN"
+tail -n +"$PAYLOAD_LINE" "$0" | tr -d '\r' | base64 -d -i > "$TMP_BIN"
 chmod +x "$TMP_BIN"
 
 if [ "$EXTRACT_ONLY" -eq 1 ]; then
