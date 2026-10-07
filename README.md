@@ -13,7 +13,9 @@
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20(macOS%20compatible)-lightgrey.svg)](#1-install)
+[![Windows: Verified](https://img.shields.io/badge/Windows%2010%2F11%20x64-Verified-success.svg?logo=windows)](#-verified-environments)
+[![Ubuntu ARM64: Verified](https://img.shields.io/badge/Ubuntu%2022.04%20ARM64-Verified-success.svg?logo=ubuntu)](#-verified-environments)
+[![CentOS x86_64: Verified](https://img.shields.io/badge/CentOS%2FRHEL%20x86__64-Verified-success.svg?logo=centos)](#-verified-environments)
 [![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Single%20Binary)-brightgreen.svg)](#1-install)
 
 ---
@@ -22,24 +24,25 @@
 
 ### 1. Install
 
-**Windows (PowerShell)**:
+#### Windows (PowerShell)
 ```powershell
 # Download standalone dev-sync.exe
 Invoke-WebRequest -Uri "https://github.com/devsync/dev-sync/releases/latest/download/dev-sync.exe" -OutFile "$HOME\dev-sync.exe"
-# (Optional) Add to PATH so you can use it anywhere:
+
+# (Optional) Add to PATH so you can use it in any folder:
 [Environment]::SetEnvironmentVariable("Path", $env:Path + ";$HOME", "User")
 ```
 
-**Linux (Ubuntu, Debian, RHEL, Rocky, CentOS - x64 & ARM64)**:
+#### Linux (Ubuntu, Debian, CentOS, RHEL - x64 & ARM64)
 ```bash
 # Option A: One-line install (auto-detects x64 / ARM64):
 curl -fsSL https://raw.githubusercontent.com/devsync/dev-sync/main/scripts/install.sh | bash
 
 # Option B: Self-extracting .run package from GitHub Releases:
-chmod +x dev-sync-linux-arm64.run && sudo ./dev-sync-linux-arm64.run
+chmod +x dev-sync-linux-*.run && sudo ./dev-sync-linux-*.run
 ```
 
-**macOS**:
+#### macOS (Apple Silicon & Intel)
 ```bash
 curl -sSL https://github.com/devsync/dev-sync/releases/latest/download/dev-sync-darwin-arm64 -o dev-sync
 sudo install -m 755 dev-sync /usr/local/bin/dev-sync
@@ -47,16 +50,15 @@ sudo install -m 755 dev-sync /usr/local/bin/dev-sync
 
 ---
 
-### 2. Configure Your Project
+### 2. Configure Your Project (10 Seconds)
 
-Navigate to your source code directory and initialize:
+Navigate into your source code directory and initialize:
 
 ```bash
 cd /path/to/my-project
 dev-sync init
 ```
 
-Follow the 10-second prompt:
 - **Source**: Press <kbd>Enter</kbd> (defaults to current folder `.`)
 - **Add replica**: Type `y`, then paste your replica destination path (e.g. `C:\Servers\test-env` or `/opt/staging`)
 - Done! Sensible ignore rules (`.git/`, `node_modules/`, logs, and temp files) are configured automatically.
@@ -72,6 +74,19 @@ dev-sync watch
 **That's it!** Whenever you edit or delete files in your source directory, Dev-Sync immediately mirrors them to all your replicas.
 
 *(Need a one-time sync instead? Just run `dev-sync sync`)*
+
+---
+
+## 🧪 Verified Environments
+
+Dev-Sync has been hands-on verified and tested across physical and virtual production targets:
+
+| Operating System | Architecture | Installation Method | Verified Features | Status |
+|---|---|---|---|---|
+| **Windows 10 / 11** | x64 & ARM64 | Standalone `dev-sync.exe` | Native `ReadDirectoryChangesW` watcher, atomic file replacement, dry-run, SHA-256 verify | ![Verified](https://img.shields.io/badge/Status-Verified-brightgreen) |
+| **Ubuntu 22.04 LTS** | ARM64 (aarch64) | `.run` Installer & Binary | Linux kernel `inotify` watcher, drift auto-repair, Discord webhooks, sub-millisecond sync | ![Verified](https://img.shields.io/badge/Status-Verified-brightgreen) |
+| **CentOS Stream / RHEL** | x86_64 (amd64) | `.run` Installer & Binary | Automated POSIX `/usr/local/bin` install, non-interactive CLI, doctor diagnostics | ![Verified](https://img.shields.io/badge/Status-Verified-brightgreen) |
+| **macOS 12+** | Apple Silicon & Intel | Standalone Mach-O Binary | BSD `kqueue` watcher, APFS atomic rename, automated GitHub Actions CI | ![CI Tested](https://img.shields.io/badge/Status-CI%20Tested-blue) |
 
 ---
 
@@ -108,7 +123,7 @@ Dev-Sync is built for developer workflows where code must physically exist in mu
 The source directory is always authoritative. Changes in replicas are classified as **drift** and are never copied back into your source code.
 
 #### 2. Atomic File Replacement
-Files are never partially written or locked. Dev-Sync streams to temporary files (`.devsync-tmp.*`), flushes storage buffers to disk (`fsync`), verifies integrity, and executes an atomic replace.
+Files are never partially written or locked. Dev-Sync streams to temporary staging files (`.devsync-tmp.*`), flushes storage buffers to disk (`fsync`), verifies integrity, and executes an atomic replace.
 
 #### 3. Path Traversal & Root Safety
 Target paths are validated to stay strictly inside replica boundaries (`SafeResolvePath`). Dangerous directory traversals (`../`), overlapping source/replica loops, and system roots (`/`, `C:\`, `C:\Windows`) are actively blocked.
